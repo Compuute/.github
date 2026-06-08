@@ -21,6 +21,7 @@
   <div class="church-bar" id="church-bar">
     <span class="church-bar-icon">&#x26EA;</span>
     <span class="church-bar-name">Laddar...</span>
+    <span id="eth-date" style="font-size:11px;opacity:0.8;margin-left:auto"></span>
     <span class="church-bar-change">Byt kyrka &#x25BE;</span>
   </div>
   <div class="church-modal" id="church-modal">
@@ -50,6 +51,16 @@
 
     <h1 id="cal-title">Kalender</h1>
     <p class="muted" id="cal-subtitle">Kommande aktiviteter och gudstjänster</p>
+
+    <div class="card" style="margin-bottom:16px;text-align:center;background:var(--accent);color:#fff;padding:20px;border:none">
+      <div style="font-size:13px;opacity:0.8" id="cal-greg-date"></div>
+      <div style="font-size:22px;font-weight:700;margin-top:4px" id="cal-eth-date"></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <h2><span class="sv">Kommande högtider</span><span class="am" style="display:none">የቀረቡ በዓላት</span></h2>
+      <div id="holidays-list"></div>
+    </div>
 
     <div id="cal-list"></div>
 
@@ -109,6 +120,31 @@
     (function () {
       setupLangPills();
       initChurchSelector(); initChurchData();
+
+      var lang = document.body.getAttribute('data-lang') || 'sv';
+      renderDates(lang);
+      renderHolidays(lang);
+
+      document.addEventListener('lang-change', function (e) {
+        var l = e.detail ? e.detail.lang : 'sv';
+        renderDates(l);
+        renderHolidays(l);
+      });
+
+      function renderDates(lang) {
+        var now = new Date();
+        document.getElementById('cal-greg-date').textContent = now.toLocaleDateString(lang === 'am' ? 'am-ET' : 'sv-SE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('cal-eth-date').textContent = formatEthiopianDate(lang);
+      }
+
+      function renderHolidays(lang) {
+        var list = document.getElementById('holidays-list');
+        var holidays = getUpcomingHolidays(lang, 5);
+        list.innerHTML = '';
+        holidays.forEach(function (h) {
+          list.innerHTML += '<div class="activity-item"><div class="activity-title">' + h.name + '</div><div class="activity-meta">' + h.ethDate + ', ' + h.year + '</div></div>';
+        });
+      }
 
       fetch(getContentUrl(), { credentials: 'omit', cache: 'no-store' })
         .then(function (r) { return r.ok ? r.json() : {}; })

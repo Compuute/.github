@@ -452,9 +452,70 @@ function initChurchSelector() {
     .catch(function () {});
 }
 
+// ------------------------------------------------ Ethiopian calendar
+
+var ETH_MONTHS_AM = ['መስከረም','ጥቅምት','ኅዳር','ታህሣሥ','ጥር','የካቲት','መጋቢት','ሚያዚያ','ግንቦት','ሰኔ','ሐምሌ','ነሐሴ','ጳጕሜ'];
+var ETH_MONTHS_SV = ['Meskerem','Tikimt','Hidar','Tahsas','Tir','Yekatit','Megabit','Miyazya','Ginbot','Sene','Hamle','Nehase','Pagume'];
+
+function toEthiopian(gYear, gMonth, gDay) {
+  var JD_EPOCH = 1723856;
+  var a = Math.floor((14 - gMonth) / 12);
+  var y = gYear + 4800 - a;
+  var m = gMonth + 12 * a - 3;
+  var jdn = gDay + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+  var r = (jdn - JD_EPOCH) % 1461;
+  var n = (r % 365) + 365 * Math.floor(r / 1460);
+  var year = 4 * Math.floor((jdn - JD_EPOCH) / 1461) + Math.floor(r / 365) - Math.floor(r / 1460);
+  var month = Math.floor(n / 30) + 1;
+  var day = (n % 30) + 1;
+  return { year: year, month: month, day: day };
+}
+
+function formatEthiopianDate(lang) {
+  var now = new Date();
+  var eth = toEthiopian(now.getFullYear(), now.getMonth() + 1, now.getDate());
+  var monthName = lang === 'am' ? ETH_MONTHS_AM[eth.month - 1] : ETH_MONTHS_SV[eth.month - 1];
+  return monthName + ' ' + eth.day + ', ' + eth.year + (lang === 'am' ? ' ዓ.ም.' : ' E.C.');
+}
+
+var ORTHODOX_HOLIDAYS = [
+  { month: 1, day: 1, sv: 'Enkutatash (Nyår)', am: 'እንቁጣጣሽ' },
+  { month: 1, day: 17, sv: 'Meskel (Korsets fest)', am: 'መስቀል' },
+  { month: 4, day: 29, sv: 'Genna (Jul)', am: 'ገና / ልደት' },
+  { month: 4, day: 11, sv: 'Timkat (Epifania)', am: 'ጥምቀት' },
+  { month: 7, day: 1, sv: 'Fastefastan börjar', am: 'ዐቢይ ጾም ይጀምራል' },
+  { month: 8, day: 23, sv: 'Sikilet (Korsfästelsen)', am: 'ስቅለት' },
+  { month: 8, day: 25, sv: 'Fasika (Påsk)', am: 'ፋሲካ' },
+  { month: 10, day: 1, sv: 'Filseta (Marias himmelsfärd)', am: 'ፍልሰታ' },
+  { month: 12, day: 16, sv: 'Buhe (Kristi förklaring)', am: 'ቡሄ' },
+];
+
+function getUpcomingHolidays(lang, count) {
+  var now = new Date();
+  var eth = toEthiopian(now.getFullYear(), now.getMonth() + 1, now.getDate());
+  var results = [];
+  for (var y = 0; y < 2 && results.length < (count || 5); y++) {
+    for (var i = 0; i < ORTHODOX_HOLIDAYS.length && results.length < (count || 5); i++) {
+      var h = ORTHODOX_HOLIDAYS[i];
+      var hYear = eth.year + y;
+      if (y === 0 && (h.month < eth.month || (h.month === eth.month && h.day < eth.day))) continue;
+      results.push({
+        name: lang === 'am' ? h.am : h.sv,
+        ethDate: (lang === 'am' ? ETH_MONTHS_AM[h.month - 1] : ETH_MONTHS_SV[h.month - 1]) + ' ' + h.day,
+        year: hYear
+      });
+    }
+  }
+  return results;
+}
+
 function applyChurchToPage(church, lang) {
   if (typeof document === 'undefined' || !church) return;
   var name = _t(church.name, lang);
+
+  // Ethiopian date in church-bar
+  var ethDateEl = document.getElementById('eth-date');
+  if (ethDateEl) ethDateEl.textContent = formatEthiopianDate(lang);
 
   // Page title
   var titleEl = document.querySelector('title');
@@ -531,6 +592,9 @@ if (typeof window !== 'undefined') {
   window.initChurchSelector = initChurchSelector;
   window.initChurchData = initChurchData;
   window.applyChurchToPage = applyChurchToPage;
+  window.toEthiopian = toEthiopian;
+  window.formatEthiopianDate = formatEthiopianDate;
+  window.getUpcomingHolidays = getUpcomingHolidays;
   window.getSelectedChurch = getSelectedChurch;
   window.getContentUrl = getContentUrl;
   window.loadChurchContent = loadChurchContent;
@@ -548,6 +612,9 @@ if (typeof module !== 'undefined' && module.exports) {
     validateName: validateName,
     validatePhone: validatePhone,
     validatePersonnummer: validatePersonnummer,
-    buildSwishLink: buildSwishLink
+    buildSwishLink: buildSwishLink,
+    toEthiopian: toEthiopian,
+    formatEthiopianDate: formatEthiopianDate,
+    getUpcomingHolidays: getUpcomingHolidays
   };
 }

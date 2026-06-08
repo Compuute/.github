@@ -23,6 +23,7 @@
   <div class="church-bar" id="church-bar">
     <span class="church-bar-icon">⛪</span>
     <span class="church-bar-name">Laddar...</span>
+    <span id="eth-date" style="font-size:11px;opacity:0.8;margin-left:auto"></span>
     <span class="church-bar-change">Byt kyrka ▾</span>
   </div>
 
@@ -329,6 +330,8 @@
           detail.textContent = 'Din medlemsregistrering är mottagen.';
           detailAm.textContent = 'የአባልነት ምዝገባዎ ደርሷል።';
         }
+        var currentLang = document.body.getAttribute('data-lang') || 'sv';
+        applyLanguage(currentLang);
         return;
       }
       if (r.status === 409) { throw { msg: 'Du är redan registrerad. / እርስዎ ቀድሞ ተመዝግበዋል።' }; }
