@@ -48,8 +48,15 @@ make test      # 350+ tests across all services + frontends
 | Livestream | [/live.html](https://kyrka-portal.pages.dev/live.html) | YouTube-embed (modulärt per kyrka via content.json) |
 | Integritetspolicy | [/privacy.html](https://kyrka-portal.pages.dev/privacy.html) | GDPR-policy på svenska + amharic |
 | Begravningstjänster | [/funeral.html](https://kyrka-portal.pages.dev/funeral.html) | Paket, priser, hemtransport, Fonus-jämförelse |
+| Dop & namngivning | [/baptism.html](https://kyrka-portal.pages.dev/baptism.html) | Ortodox doptradition, dag 40/80, certifikat |
+| Minnesbön (ተዝካር) | [/tezkar.html](https://kyrka-portal.pages.dev/tezkar.html) | Alla 7 minnesdagar, bokning via Swish |
+| Bibliotek | [/library.html](https://kyrka-portal.pages.dev/library.html) | Bibeln, Kebra Nagast, Fetha Negest, böner |
+| Stöd & rådgivning | [/support.html](https://kyrka-portal.pages.dev/support.html) | Samtalsstöd, sorg, integration, ungdom |
+| Lokal & bokning | [/venue.html](https://kyrka-portal.pages.dev/venue.html) | Stora/lilla salen, kök, bokningsinfo |
+| Kalender | [/calendar.html](https://kyrka-portal.pages.dev/calendar.html) | Events från content.json, veckoschema |
+| FAQ | [/faq.html](https://kyrka-portal.pages.dev/faq.html) | 10 bilinguella frågor med accordion |
 | Om oss | [/about.html](https://kyrka-portal.pages.dev/about.html) | Kyrkans historia, Tewahedo-tron, verksamhet |
-| Kontakt | [/contact.html](https://kyrka-portal.pages.dev/contact.html) | Adress, telefon, tider, Telegram |
+| Kontakt | [/contact.html](https://kyrka-portal.pages.dev/contact.html) | Dynamisk per vald kyrka — adress, telefon, email |
 
 Alla sidor: tvåspråkiga (🇸🇪/🇪🇹), PWA-installerbara, offline-stöd, inga kakor.
 
