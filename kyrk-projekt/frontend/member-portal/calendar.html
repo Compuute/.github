@@ -11,6 +11,7 @@
   <title>Kalender — Abune Tekle Haymanot</title>
   <link rel="stylesheet" href="styles.css" />
   <script src="app.js"></script>
+  <script src="calendar-engine.js"></script>
 </head>
 <body>
     <div class="top-bar">
@@ -49,20 +50,42 @@
       <button class="lang-pill" data-lang="am">&#x1F1EA;&#x1F1F9; &#x12A0;&#x121B;&#x122D;&#x129B;</button>
     </div>
 
-    <h1 id="cal-title">Kalender</h1>
-    <p class="muted" id="cal-subtitle">Kommande aktiviteter och gudstjänster</p>
+    <h1 id="cal-title"><span class="sv">Kalender</span><span class="am" style="display:none">ቀን መቁጠሪያ</span></h1>
 
-    <div class="card" style="margin-bottom:16px;text-align:center;background:var(--accent);color:#fff;padding:20px;border:none">
-      <div style="font-size:13px;opacity:0.8" id="cal-greg-date"></div>
-      <div style="font-size:22px;font-weight:700;margin-top:4px" id="cal-eth-date"></div>
-    </div>
+    <div class="card" style="padding:20px;margin-bottom:16px" id="calendar-grid"></div>
+
+    <div id="cal-list" style="margin-bottom:16px"></div>
 
     <div class="card" style="margin-bottom:16px">
-      <h2><span class="sv">Kommande högtider</span><span class="am" style="display:none">የቀረቡ በዓላት</span></h2>
-      <div id="holidays-list"></div>
+      <h2><span class="sv">Lär dig mer</span><span class="am" style="display:none">ተጨማሪ ይወቁ</span></h2>
+      <div class="faq-item" style="border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden">
+        <div style="padding:14px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--card)" onclick="this.parentElement.classList.toggle('open')">
+          <span class="sv">Varför har vi 13 månader?</span><span class="am" style="display:none">ለምን 13 ወራት አሉን?</span> <span class="arrow" style="font-size:12px">▼</span>
+        </div>
+        <div class="faq-a" style="display:none;padding:0 14px 14px;font-size:14px;line-height:1.7;color:var(--muted)">
+          <span class="sv">12 månader × 30 dagar = 360 dagar. Men ett år har ~365,25 dagar. Den 13:e månaden Pagume (ጳጕሜ) fångar de 5-6 extra dagarna. Samma princip som det gamla egyptiska och koptiska kalendrarna.</span>
+          <span class="am" style="display:none">12 ወራት × 30 ቀናት = 360 ቀናት። ግን አንድ ዓመት ~365.25 ቀናት ነው። 13ኛው ወር ጳጕሜ ተጨማሪ 5-6 ቀናትን ይይዛል።</span>
+        </div>
+      </div>
+      <div class="faq-item" style="border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden">
+        <div style="padding:14px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--card)" onclick="this.parentElement.classList.toggle('open')">
+          <span class="sv">Varför skiljer det 7-8 år?</span><span class="am" style="display:none">ለምን 7-8 ዓመት ልዩነት አለ?</span> <span class="arrow" style="font-size:12px">▼</span>
+        </div>
+        <div class="faq-a" style="display:none;padding:0 14px 14px;font-size:14px;line-height:1.7;color:var(--muted)">
+          <span class="sv">Båda räknar från Jesu födelse — men oense om exakt när. Den romerska kyrkan ändrade beräkningen ~500 e.Kr. Etiopien behöll den ursprungliga. Resultat: ~7 års skillnad.</span>
+          <span class="am" style="display:none">ሁለቱም ከኢየሱስ ልደት ይቆጥራሉ — ግን መቼ እንደ ተወለደ አይስማሙም። የሮም ቤተ ክርስቲያን ስሌቱን ~500 ዓ.ም. ቀየረች። ኢትዮጵያ የመጀመሪያውን ይዛ ቀረች።</span>
+        </div>
+      </div>
+      <div class="faq-item" style="border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden">
+        <div style="padding:14px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--card)" onclick="this.parentElement.classList.toggle('open')">
+          <span class="sv">Etiopisk tid — varför säger vi "kl 3" men menar "kl 9"?</span><span class="am" style="display:none">የኢትዮጵያ ሰዓት — ለምን "3 ሰዓት" ስንል "9:00" ማለታችን ነው?</span> <span class="arrow" style="font-size:12px">▼</span>
+        </div>
+        <div class="faq-a" style="display:none;padding:0 14px 14px;font-size:14px;line-height:1.7;color:var(--muted)">
+          <span class="sv">I etiopisk tid börjar dagen vid soluppgång (06:00). Så kl 1 etiopisk = 07:00, kl 3 = 09:00, kl 6 = 12:00. Natten börjar kl 12 etiopisk = 18:00.</span>
+          <span class="am" style="display:none">በኢትዮጵያ ሰዓት ቀኑ ከፀሐይ ሲወጣ (6:00) ይጀምራል። ስለዚህ 1 ሰዓት = 7:00፣ 3 ሰዓት = 9:00፣ 6 ሰዓት = 12:00። ሌሊቱ 12 ሰዓት = 18:00 ይጀምራል።</span>
+        </div>
+      </div>
     </div>
-
-    <div id="cal-list"></div>
 
     <div class="card" style="margin-top:24px">
       <h2 id="schedule-title">Veckoschema</h2>
@@ -122,29 +145,13 @@
       initChurchSelector(); initChurchData();
 
       var lang = document.body.getAttribute('data-lang') || 'sv';
-      renderDates(lang);
-      renderHolidays(lang);
+      initCalendar('calendar-grid', lang);
 
       document.addEventListener('lang-change', function (e) {
         var l = e.detail ? e.detail.lang : 'sv';
-        renderDates(l);
-        renderHolidays(l);
+        calCurrentLang = l;
+        renderCalendarGrid('calendar-grid', calCurrentYear, calCurrentMonth, l);
       });
-
-      function renderDates(lang) {
-        var now = new Date();
-        document.getElementById('cal-greg-date').textContent = now.toLocaleDateString(lang === 'am' ? 'am-ET' : 'sv-SE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        document.getElementById('cal-eth-date').textContent = formatEthiopianDate(lang);
-      }
-
-      function renderHolidays(lang) {
-        var list = document.getElementById('holidays-list');
-        var holidays = getUpcomingHolidays(lang, 5);
-        list.innerHTML = '';
-        holidays.forEach(function (h) {
-          list.innerHTML += '<div class="activity-item"><div class="activity-title">' + h.name + '</div><div class="activity-meta">' + h.ethDate + ', ' + h.year + '</div></div>';
-        });
-      }
 
       fetch(getContentUrl(), { credentials: 'omit', cache: 'no-store' })
         .then(function (r) { return r.ok ? r.json() : {}; })

@@ -18,6 +18,7 @@ const OFFLINE_URLS = [
   '/venue.html',
   '/styles.css',
   '/app.js',
+  '/calendar-engine.js',
   '/content.json',
   '/manifest.json'
 ];
