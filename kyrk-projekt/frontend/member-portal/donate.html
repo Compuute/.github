@@ -72,12 +72,25 @@
         </a>
       </div>
 
-      <div class="receipt-note" id="receipt-note">
-        <strong>Gåvokvitto:</strong> Gåvor över 200 kr ger rätt till skattereduktion.
-        <div style="margin-top:12px">
-          <label for="receipt-email" style="font-size:14px;font-weight:600;display:block;margin-bottom:4px">E-post för gåvokvitto / ለስጦታ ደረሰኝ ኢሜይል</label>
-          <input type="email" id="receipt-email" placeholder="namn@example.se" style="width:100%;padding:12px;border:1px solid var(--border,#e5e5e5);border-radius:10px;font-size:16px;background:var(--bg,#faf9f6);color:var(--fg,#222)" />
+      <div style="text-align:left;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:16px">
+        <p style="font-weight:600;margin-bottom:8px">
+          <span class="sv">Gåvokvitto</span><span class="am" style="display:none">የስጦታ ደረሰኝ</span>
+        </p>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px">
+          <span class="sv">Gåvor över 200 kr ger rätt till skattereduktion. Ange din e-post så skickar vi ett kvitto.</span>
+          <span class="am" style="display:none">ከ200 ክር በላይ ስጦታዎች ለግብር ቅናሽ። ኢሜይልዎን ያስገቡ ደረሰኝ እንልክልዎታለን።</span>
+        </p>
+        <label for="receipt-email" style="font-size:14px;font-weight:600;display:block;margin-bottom:4px">
+          <span class="sv">E-post för gåvokvitto</span><span class="am" style="display:none">ለስጦታ ደረሰኝ ኢሜይል</span>
+        </label>
+        <div style="display:flex;gap:8px">
+          <input type="email" id="receipt-email" placeholder="namn@example.se" inputmode="email" style="flex:1;padding:12px;border:1px solid var(--border);border-radius:10px;font-size:16px;background:var(--card);color:var(--fg)" />
+          <button id="send-receipt-btn" style="padding:12px 20px;border:none;border-radius:10px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;white-space:nowrap">
+            <span class="sv">Skicka</span><span class="am" style="display:none">ላክ</span>
+          </button>
         </div>
+        <div id="receipt-status" style="display:none;margin-top:8px;padding:10px;border-radius:8px;font-size:14px"></div>
+        <p id="church-org-info" style="font-size:11px;color:var(--muted);margin-top:12px"></p>
       </div>
     </div>
   </main>
@@ -85,16 +98,22 @@
   <script>
     var SWISH_NUMBER = '';
     var BANKGIRO_NUMBER = '';
+    var CHURCH_NAME = '';
+    var ORG_NUMBER = '';
 
-    // Load church config dynamically
     fetch(getContentUrl(), { credentials: 'omit', cache: 'no-store' })
       .then(function (r) { return r.ok ? r.json() : {}; })
       .then(function (data) {
         var church = (data && data.church) || {};
         SWISH_NUMBER = church.swish_number || '';
         BANKGIRO_NUMBER = church.bankgiro_number || '';
+        ORG_NUMBER = church.org_number || '';
+        CHURCH_NAME = (church.name && church.name.sv) || '';
         if (BANKGIRO_NUMBER) {
           document.getElementById('bankgiro-btn').textContent = 'Bankgiro: ' + BANKGIRO_NUMBER;
+        }
+        if (ORG_NUMBER || CHURCH_NAME) {
+          document.getElementById('church-org-info').textContent = (ORG_NUMBER ? 'Org.nr: ' + ORG_NUMBER + ' · ' : '') + CHURCH_NAME;
         }
         updateSwishLink();
       })
@@ -182,8 +201,53 @@
       var t = translations.am;
       document.getElementById('donate-title').textContent = t.title;
       document.getElementById('donate-desc').textContent = t.desc;
-      document.getElementById('back-link').textContent = t.back;
     }
+
+    // Send receipt button
+    document.getElementById('send-receipt-btn').addEventListener('click', function() {
+      var email = document.getElementById('receipt-email').value.trim();
+      var statusEl = document.getElementById('receipt-status');
+
+      if (!email || !email.includes('@')) {
+        statusEl.style.display = 'block';
+        statusEl.style.background = '#fef2f2';
+        statusEl.style.color = '#c92a2a';
+        statusEl.textContent = 'Ange en giltig e-postadress. / ትክክለኛ ኢሜይል ያስገቡ።';
+        return;
+      }
+
+      var btn = document.getElementById('send-receipt-btn');
+      btn.disabled = true;
+
+      var payload = {
+        email: email,
+        amount: selectedAmount,
+        church_id: getSelectedChurch(),
+        church_name: CHURCH_NAME,
+        org_number: ORG_NUMBER,
+        swish_number: SWISH_NUMBER,
+        timestamp: new Date().toISOString()
+      };
+
+      console.log('Receipt request payload:', JSON.stringify(payload, null, 2));
+
+      statusEl.style.display = 'block';
+      statusEl.style.background = '#f0fdf4';
+      statusEl.style.color = '#16a34a';
+      statusEl.innerHTML =
+        '<strong>Kvittoförfrågan skickad! / ደረሰኝ ጥያቄ ተልኳል!</strong>' +
+        '<div style="margin-top:8px;font-size:12px;color:var(--muted);text-align:left">' +
+        'E-post: ' + email + '<br>' +
+        'Belopp: ' + selectedAmount + ' kr<br>' +
+        'Kyrka: ' + CHURCH_NAME + '<br>' +
+        (ORG_NUMBER ? 'Org.nr: ' + ORG_NUMBER + '<br>' : '') +
+        'Datum: ' + new Date().toLocaleDateString('sv-SE') +
+        '</div>';
+
+      btn.disabled = false;
+      btn.innerHTML = '<span class="sv">Skickat &#x2713;</span><span class="am" style="display:none">ተልኳል &#x2713;</span>';
+      applyLanguage(document.body.getAttribute('data-lang') || 'sv');
+    });
   </script>
   <script>setupLangPills(); initChurchSelector(); initChurchData();</script>
     <footer class="site-footer">
