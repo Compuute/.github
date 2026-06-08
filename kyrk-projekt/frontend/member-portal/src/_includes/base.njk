@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  {% if description %}<meta name="description" content="{{ description }}" />{% endif %}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#3b5bdb" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="/app.js"></script>
+</head>
+<body>
+  <div class="top-bar">
+    <a href="./contact">Kontakta oss</a>
+    <a href="./about">Om oss</a>
+    <a class="top-bar-cta" href="./donate">Ge en g&#xE5;va</a>
+  </div>
+  <div class="church-bar" id="church-bar">
+    <span class="church-bar-icon">&#x26EA;</span>
+    <span class="church-bar-name">Laddar...</span>
+    <span id="eth-date" style="font-size:11px;opacity:0.8;margin-left:auto"></span>
+    <span class="church-bar-change">Byt kyrka &#x25BE;</span>
+  </div>
+  <div class="church-modal" id="church-modal">
+    <div class="church-modal-inner">
+      <button class="church-modal-close">St&#xE4;ng &#x2715;</button>
+      <h2>V&#xE4;lj kyrka</h2>
+      <input type="text" class="church-search" placeholder="S&#xF6;k p&#xE5; namn eller ort..." />
+      <button class="church-locate-btn">&#x1F4CD; Hitta n&#xE4;ra mig</button>
+      <div class="church-list"></div>
+    </div>
+  </div>
+  <nav class="site-nav" id="site-nav">
+    <a href="./" {% if activePage == "home" %}class="active"{% endif %}><span class="sv">Hem</span><span class="am" style="display:none">&#x1264;&#x1275;</span></a>
+    <a href="./intake" {% if activePage == "intake" %}class="active"{% endif %}><span class="sv">Bli medlem</span><span class="am" style="display:none">&#x12A0;&#x1263;&#x120D; &#x12ED;&#x1201;&#x1291;</span></a>
+    <div class="nav-dropdown">
+      <button class="nav-dropdown-toggle {% if activePage == "service" %}active{% endif %}" onclick="this.parentElement.classList.toggle('open')"><span class="sv">Fler tj&#xE4;nster</span><span class="am" style="display:none">&#x1270;&#x1328;&#x121B;&#x122A;</span> &#x25BE;</button>
+      <div class="nav-dropdown-menu">
+        <a href="./funeral"><span class="sv">Begravning</span><span class="am" style="display:none">&#x1240;&#x1265;&#x122D;</span></a>
+        <a href="./baptism"><span class="sv">Dop</span><span class="am" style="display:none">&#x1325;&#x121D;&#x1240;&#x1275;</span></a>
+        <a href="./tezkar"><span class="sv">Minnesb&#xF6;n</span><span class="am" style="display:none">&#x1270;&#x12DD;&#x12AB;&#x122D;</span></a>
+        <a href="./library"><span class="sv">Bibliotek</span><span class="am" style="display:none">&#x1264;&#x1270; &#x1218;&#x133B;&#x1215;&#x134D;&#x1275;</span></a>
+        <a href="./support"><span class="sv">St&#xF6;d</span><span class="am" style="display:none">&#x12F5;&#x130B;&#x134D;</span></a>
+        <a href="./venue"><span class="sv">Lokal</span><span class="am" style="display:none">&#x12A0;&#x12F3;&#x122B;&#x123D;</span></a>
+      </div>
+    </div>
+    <a href="./live" {% if activePage == "live" %}class="active"{% endif %}><span class="sv">Gudstj&#xE4;nst</span><span class="am" style="display:none">&#x1245;&#x12F3;&#x1234;</span></a>
+    <a href="./calendar" {% if activePage == "calendar" %}class="active"{% endif %}><span class="sv">Kalender</span><span class="am" style="display:none">&#x1240;&#x1295; &#x1218;&#x1281;&#x1320;&#x122A;&#x12EB;</span></a>
+    <a href="./faq" {% if activePage == "faq" %}class="active"{% endif %}>FAQ</a>
+  </nav>
+  {% if breadcrumb %}<div class="breadcrumb"><a href="./">Start</a> / {{ breadcrumb }}</div>{% endif %}
+  <main class="container">
+    <div class="lang-switcher">
+      <button class="lang-pill active" data-lang="sv">&#x1F1F8;&#x1F1EA; Svenska</button>
+      <button class="lang-pill" data-lang="am">&#x1F1EA;&#x1F1F9; &#x12A0;&#x121B;&#x122D;&#x129B;</button>
+    </div>
+    {{ content | safe }}
+  </main>
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h3><span class="sv">Kontakt</span><span class="am" style="display:none">&#x130D;&#x1295;&#x129B;&#x1290;&#x1275;</span></h3>
+        <p id="footer-church-name">Laddar...</p>
+        <a href="./contact"><span class="sv">Kontakta oss</span><span class="am" style="display:none">&#x12EB;&#x130D;&#x1299;&#x1295;</span></a>
+        <a id="footer-phone" href="#"><span class="sv">Telefon</span><span class="am" style="display:none">&#x1235;&#x120D;&#x12AD;</span></a>
+        <p id="footer-org" style="font-size:11px;margin-top:4px"></p>
+      </div>
+      <div class="footer-col">
+        <h3><span class="sv">Kalender</span><span class="am" style="display:none">&#x1240;&#x1295; &#x12DD;&#x130D;&#x1305;&#x1276;&#x127D;</span></h3>
+        <a href="./calendar"><span class="sv">Kommande evenemang</span><span class="am" style="display:none">&#x12E8;&#x1240;&#x1228;&#x1261; &#x12DD;&#x130D;&#x1305;&#x1276;&#x127D;</span></a>
+        <a href="./live"><span class="sv">Gudstj&#xE4;nst live</span><span class="am" style="display:none">&#x12E8;&#x1240;&#x1325;&#x1273; &#x1245;&#x12F3;&#x1234;</span></a>
+      </div>
+      <div class="footer-col">
+        <h3><span class="sv">Hitta snabbt</span><span class="am" style="display:none">&#x1260;&#x134D;&#x1325;&#x1290;&#x1275; &#x12EB;&#x130D;&#x1299;</span></h3>
+        <a href="./support"><span class="sv">St&#xF6;d &amp; r&#xE5;dgivning</span><span class="am" style="display:none">&#x12F5;&#x130B;&#x134D; &#x12A5;&#x1293; &#x121D;&#x12AD;&#x122D;</span></a>
+        <a href="./intake"><span class="sv">Bli medlem</span><span class="am" style="display:none">&#x12A0;&#x1263;&#x120D; &#x12ED;&#x1201;&#x1291;</span></a>
+        <a href="./donate"><span class="sv">Ge en g&#xE5;va</span><span class="am" style="display:none">&#x1235;&#x1326;&#x1273; &#x12ED;&#x1235;&#x1321;</span></a>
+        <a href="./faq">FAQ</a>
+        <a href="./library"><span class="sv">Bibliotek</span><span class="am" style="display:none">&#x1264;&#x1270; &#x1218;&#x133B;&#x1215;&#x134D;&#x1275;</span></a>
+      </div>
+      <div class="footer-col">
+        <h3><span class="sv">Sociala kanaler</span><span class="am" style="display:none">&#x121B;&#x1205;&#x1260;&#x122B;&#x12CA; &#x121A;&#x12F2;&#x12EB;</span></h3>
+        <a href="https://t.me/kyrka_kanal" target="_blank">Telegram</a>
+        <a href="./about"><span class="sv">Om oss</span><span class="am" style="display:none">&#x1235;&#x1208; &#x12A5;&#x129B;</span></a>
+        <a href="./privacy"><span class="sv">Integritetspolicy</span><span class="am" style="display:none">&#x12E8;&#x130D;&#x120B;&#x12CA;&#x1290;&#x1275; &#x1356;&#x120A;&#x1234;</span></a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="sv">Den h&#xE4;r sidan anv&#xE4;nder inga kakor och sp&#xE5;rar dig inte.</span>
+      <span class="am" style="display:none">&#x12ED;&#x1205; &#x1308;&#x133D; &#x12A9;&#x12AA;&#x12CE;&#x127D;&#x1295; &#x12A0;&#x12ED;&#x1320;&#x1240;&#x121D;&#x121D;&#x1366;</span>
+    </div>
+  </footer>
+  <script>setupLangPills(); initChurchSelector(); initChurchData();</script>
+</body>
+</html>
