@@ -297,6 +297,7 @@ function setupLangPills() {
       }
       document.body.setAttribute('data-lang', lang);
       applyLanguage(lang);
+      document.dispatchEvent(new CustomEvent('lang-change', { detail: { lang: lang } }));
     });
   }
 }
